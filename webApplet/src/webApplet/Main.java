@@ -1,22 +1,24 @@
 package webApplet;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Scanner;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args)
     {
-    	String startTag = "<h1 class=\"uos-page-title uos-main-title uos-page-title-compressed\" property=\"name\">";
-    	String endTag = "</h1>";
+
     	
-    	WebpageScrapper scrapper = new WebpageScrapper("http://www.ecs.soton.ac.uk/people/pll", startTag, endTag);
-		String print = scrapper.GetResult();
-		print = scrapper.GetResult();
-		System.out.println(print);
+    	String startTag = "<a href=\"https://secure.ecs.soton.ac.uk/people/([a-z]{2,3}[0-9][a-z][0-9]{2})\">";
+    	String endTag = "</a>";
+    	
+    	
+    	WebpageScrapper scrapper = new WebpageScrapper("https://secure.ecs.soton.ac.uk/people/dem/related_people", startTag, endTag);
+    	scrapper.SetRegex(true);
+		List<String> print = scrapper.GetResults();
+		for(int i=0;i<print.size();i++)
+		{
+			System.out.println(print.get(i));
+		}
     	
     }
 }
