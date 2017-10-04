@@ -2,6 +2,7 @@ package webApplet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +11,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class WebpageScrapper {
 	
@@ -65,12 +73,12 @@ public class WebpageScrapper {
 			inputLine = bReader.readLine(); //read first line
 			while(inputLine != null)
 			{
-				int index = inputLine.indexOf(getStartTag()) + getStartTag().length(); //find the index where the data string stars
+				int index = inputLine.indexOf(startTag) + startTag.length(); //find the index where the data string stars
 				
 				if(index != getStartTag().length()- 1) //if there is a tag
 				{
 					inputLine = inputLine.substring(index).trim(); //get the data string and trim the empty spaces
-					int indexEnd = inputLine.indexOf(getEndTag()); //find the end of the data string
+					int indexEnd = inputLine.indexOf(endTag); //find the end of the data string
 					lastResult = inputLine.substring(0,indexEnd); // cache the result
 					
 					bReader.close(); //close the reader (done)
@@ -120,7 +128,7 @@ public class WebpageScrapper {
 				System.out.println(inputLine);
 				if(!useRegex)
 				{
-					int index = inputLine.indexOf(getStartTag()) + getStartTag().length(); //find the index where the data string stars
+					int index = inputLine.indexOf(startTag) + startTag.length(); //find the index where the data string stars
 					
 					if(index != getStartTag().length()- 1) //if there is a tag
 					{
@@ -153,6 +161,44 @@ public class WebpageScrapper {
 			
 		} catch (IOException e) {
 			throw new RuntimeException(e); //Something failed while reading the web site source
+		}
+	}
+	
+	public void login()
+	{
+	    java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.OFF);
+	    java.util.logging.Logger.getLogger("org.apache.http").setLevel(java.util.logging.Level.OFF);
+		WebClient wb = new WebClient(BrowserVersion.CHROME);
+		wb.getCookieManager().setCookiesEnabled(true);
+		String username="sa3u17";
+		Scanner sc = new Scanner(System.in);
+		String password= sc.nextLine();
+		try {	
+			HtmlPage loginPage = wb.getPage("https://secure.ecs.soton.ac.uk/");		
+			HtmlForm loginForm = loginPage.getForms().get(1);	
+			loginForm.getInputByName("ecslogin_username").setValueAttribute(username);
+			HtmlInput pass = loginForm.getInputByName("ecslogin_password");
+			pass.type("password");
+			pass.setValueAttribute(password);
+			
+			loginForm.getInputByValue("Log in....").click();
+		} catch (FailingHttpStatusCodeException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			//All this method does is return the HTML response for some URL.
+			//We'll call this after we log in!
+			System.out.println(wb.getPage("https://secure.ecs.soton.ac.uk/people/dem/related_people").getWebResponse().getContentAsString());
+		} catch (FailingHttpStatusCodeException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
