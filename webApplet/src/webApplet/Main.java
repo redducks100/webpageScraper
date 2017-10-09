@@ -5,27 +5,45 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args)
-    {
+    {   
+    	String startTagAdvanced = "<a href=\"https://secure.ecs.soton.ac.uk/people/([a-z]{2,3}[0-9][a-z][0-9]{2})\">";
+    	String endTagAdvanced = "</a>";
+    	String urlLinkAdvanced = "https://secure.ecs.soton.ac.uk/people/dem/related_people";
     	
-    	/*System.getProperties().put("proxySet", "true");
-    	System.getProperties().put("proxyHost", "152.78.128.51");
-    	System.getProperties().put("proxyPort", "3128");*/
-
+    	String urlLinkBasic = "http://www.ecs.soton.ac.uk/people/dem";
+    	String startTagBasic = "property=\"name\">";
+    	String endTagBasic = "</h1>";
     	
-    	String startTag = "<a href=\"https://secure.ecs.soton.ac.uk/people/([a-z]{2,3}[0-9][a-z][0-9]{2})\">";
-    	String endTag = "</a>";
+    	WebpageScraper scraper = new WebpageScraper(urlLinkBasic);
+    	scraper.setStartTag(startTagBasic);
+    	scraper.setEndTag(endTagBasic);
+    	try {
+			List<String> results = scraper.GetResults(null, null);
+			
+			for(int i=0;i<results.size();i++)
+			{
+				System.out.println(results.get(i));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
-    	
-    	
-    	WebpageScrapper scrapper = new WebpageScrapper("https://secure.ecs.soton.ac.uk/people/dem/related_people", startTag, endTag);
-    	/*scrapper.SetRegex(true);
-		List<String> print = scrapper.GetResults();
-		for(int i=0;i<print.size();i++)
-		{
-			System.out.println(print.get(i));
-		}*/
-    	
-    	scrapper.login();
+    	try {
+    		scraper = new WebpageScraper(urlLinkAdvanced);
+        	scraper.setStartTag(startTagAdvanced);
+        	scraper.setEndTag(endTagAdvanced);
+        	scraper.useRegex(true);
+			List<String> results = scraper.GetResults("https://secure.ecs.soton.ac.uk/login/?uri=%2F&args=", new String[]{"ecslogin_username","ecslogin_password","Log in...."});
+			for(int i=0;i<results.size();i++)
+			{
+				System.out.println(results.get(i));
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
     }
 }
